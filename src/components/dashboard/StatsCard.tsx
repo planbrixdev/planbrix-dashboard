@@ -30,7 +30,7 @@ export function StatsCard({
           {title}
         </CardTitle>
         <div className={cn("p-2 rounded-full bg-background/50")}>
-           <Icon className="h-4 w-4 text-primary" />
+          <Icon className="h-4 w-4 text-primary" />
         </div>
       </CardHeader>
       <CardContent>
@@ -38,12 +38,12 @@ export function StatsCard({
         <p className="text-xs text-muted-foreground mt-1">
           {description}
           {trend && trendValue && (
-             <span className={cn(
-                "ml-1 font-medium",
-                trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"
-             )}>
-                {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} {trendValue}
-             </span>
+            <span className={cn(
+              "ml-1 font-medium",
+              trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"
+            )}>
+              {trend === "up" ? "↑" : trend === "down" ? "↓" : "→"} {trendValue}
+            </span>
           )}
         </p>
       </CardContent>
@@ -52,39 +52,40 @@ export function StatsCard({
 }
 
 export function DashboardStats() {
-    return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <StatsCard 
-                title="Total Tasks" 
-                value="12" 
-                description="Total tasks for this week"
-                icon={ListTodo}
-                trend="up"
-                trendValue="12%"
-            />
-            <StatsCard 
-                title="Completed" 
-                value="8" 
-                description="Tasks completed today"
-                icon={CheckCircle2}
-                className="bg-green-500/10 border-green-500/20"
-            />
-            <StatsCard 
-                title="Pending" 
-                value="4" 
-                description="Remaining tasks"
-                icon={Clock}
-                className="bg-orange-500/10 border-orange-500/20"
-            />
-            <StatsCard 
-                title="Overdue" 
-                value="1" 
-                description="Tasks past due date"
-                icon={AlertTriangle}
-                className="bg-red-500/10 border-red-500/20"
-                trend="down"
-                trendValue="2%"
-            />
-        </div>
-    )
+  return (
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <StatsCard
+        title="Total Tasks"
+        value="12"
+        description="Total tasks for this week"
+        icon={ListTodo}
+        trend="up"
+        trendValue="12%"
+        className="bg-primary/10 border-primary/20 text-primary"
+      />
+      <StatsCard
+        title="Completed"
+        value="8"
+        description="Tasks completed today"
+        icon={CheckCircle2}
+        className="bg-green-500/15 border-green-500/30 text-green-600"
+      />
+      <StatsCard
+        title="Pending"
+        value="4"
+        description="Remaining tasks"
+        icon={Clock}
+        className="bg-orange-500/15 border-orange-500/30 text-orange-600"
+      />
+      <StatsCard
+        title="Overdue"
+        value="1"
+        description="Tasks past due date"
+        icon={AlertTriangle}
+        className="bg-red-500/15 border-red-500/30 text-red-600"
+        trend="down"
+        trendValue="2%"
+      />
+    </div>
+  )
 }

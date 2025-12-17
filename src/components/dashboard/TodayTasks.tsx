@@ -1,11 +1,11 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { cn, getPriorityColor } from "@/lib/utils"
 import type { Task } from "@/types"
-import { Clock } from "lucide-react"
+import { Clock, CheckCircle2, Circle } from "lucide-react"
+import { useEventDetail } from "@/hooks/use-event-detail"
 
 // Mock data - replace with real data later
 const MOCK_TASKS: Partial<Task>[] = [
@@ -44,62 +44,71 @@ const MOCK_TASKS: Partial<Task>[] = [
 ]
 
 export function TodayTasks() {
+  const { onOpen } = useEventDetail()
+
   return (
     <Card className="col-span-1 md:col-span-2 lg:col-span-3 glass">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-            <span>Today&apos;s Tasks</span>
-            <span className="text-sm font-normal text-muted-foreground">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </span>
+          <span>Today&apos;s Tasks</span>
+          <span className="text-sm font-normal text-muted-foreground">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long' })}
+          </span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-            {MOCK_TASKS.map((task) => {
-               const priorityColor = getPriorityColor(task.priority!)
-               return (
-                <div
-                    key={task.id}
-                    className={cn(
-                    "flex items-center justify-between p-3 rounded-xl border transition-all hover:bg-muted/50 group",
-                    task.status === "completed" ? "opacity-60 bg-muted/20" : "bg-card/50",
-                    priorityColor.border
+          {MOCK_TASKS.map((task) => {
+            const priorityColor = getPriorityColor(task.priority!)
+            const isCompleted = task.status === "completed"
+
+            return (
+              <div
+                key={task.id}
+                onClick={() => onOpen(task as Task)}
+                className={cn(
+                  "flex items-center justify-between p-3 rounded-xl border transition-all hover:bg-muted/50 group cursor-pointer hover:shadow-sm",
+                  isCompleted ? "opacity-60 bg-muted/20" : "bg-card/50",
+                  priorityColor.border
+                )}
+              >
+                <div className="flex items-start gap-3 w-full">
+                  <div className="mt-1 shrink-0 text-muted-foreground">
+                    {isCompleted ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Circle className="h-5 w-5 hover:text-primary transition-colors" />
                     )}
-                >
-                    <div className="flex items-start gap-3">
-                        <Checkbox 
-                            id={`task-${task.id}`} 
-                            checked={task.status === "completed"}
-                            className="mt-1 transition-all data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        />
-                        <div className="space-y-1">
-                            <label
-                            htmlFor={`task-${task.id}`}
-                            className={cn(
-                                "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer block",
-                                task.status === "completed" && "line-through text-muted-foreground"
-                            )}
-                            >
-                            {task.title}
-                            </label>
-                            
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <span className="flex items-center">
-                                    <Clock className="mr-1 h-3 w-3" />
-                                    {task.due_time}
-                                </span>
-                                {task.category && (
-                                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px]" style={{ backgroundColor: `${task.category.color}20`, color: task.category.color }}>
-                                        {task.category.name}
-                                    </Badge>
-                                )}
-                            </div>
-                        </div>
+                  </div>
+
+                  <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <label
+                        className={cn(
+                          "text-sm font-medium leading-none cursor-pointer truncate mr-2",
+                          isCompleted && "line-through text-muted-foreground"
+                        )}
+                      >
+                        {task.title}
+                      </label>
                     </div>
+
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <span className="flex items-center shrink-0">
+                        <Clock className="mr-1 h-3 w-3" />
+                        {task.due_time}
+                      </span>
+                      {task.category && (
+                        <Badge variant="secondary" className="h-5 px-1.5 text-[10px]" style={{ backgroundColor: `${task.category.color}20`, color: task.category.color }}>
+                          {task.category.name}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
-               )
-            })}
+              </div>
+            )
+          })}
         </div>
       </CardContent>
     </Card>
