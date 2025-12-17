@@ -1,14 +1,7 @@
+import { Category } from "./category"
+
 export type Priority = "low" | "medium" | "high" | "urgent"
 export type TaskStatus = "pending" | "in-progress" | "completed"
-
-export interface Category {
-  id: string
-  name: string
-  color: string
-  icon?: string | null
-  user_id: string
-  created_at: string
-}
 
 export interface Task {
   id: string
@@ -31,30 +24,4 @@ export interface Task {
   updated_at: string
   completed_at?: string | null
   deleted_at?: string | null
-}
-
-export interface Reminder {
-  id: string
-  task_id: string
-  remind_at: string
-  created_at: string
-}
-
-export type Profile = {
-    id: string
-    email: string
-    full_name?: string
-    avatar_url?: string
-}
-
-// Calendar Types
-export type CalendarView = "month" | "week" | "day" | "list"
-
-export interface CalendarEvent {
-  id: string
-  title: string
-  start: Date
-  end: Date
-  allDay?: boolean
-  resource?: unknown
 }
