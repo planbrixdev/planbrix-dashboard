@@ -72,7 +72,7 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
         </DialogHeader>
 
         <div className="grid gap-5 py-4">
-          {/* Title - Full Width */}
+          {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title" className="text-sm font-medium">Title</Label>
             <Input
@@ -82,7 +82,7 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
             />
           </div>
 
-          {/* Description - Full Width */}
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description" className="text-sm font-medium">Description</Label>
             <Textarea
@@ -92,7 +92,7 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
             />
           </div>
 
-          {/* Date Picker - Full Width */}
+          {/* Due Date */}
           <div className="space-y-2">
             <Label className="text-sm font-medium">Due Date</Label>
             <Popover>
@@ -119,7 +119,7 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
             </Popover>
           </div>
 
-          {/* Time Row - Start Time & End Time */}
+          {/* Start Time & End Time */}
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
@@ -138,13 +138,13 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
             </div>
           </div>
 
-          {/* Status & Priority Row */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Status, Priority & Category - 3 columns */}
+          <div className="grid grid-cols-3 gap-3">
             <div className="space-y-2">
               <Label className="text-sm font-medium">Status</Label>
               <Select defaultValue="pending">
                 <SelectTrigger className="bg-background/50 h-10">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">
@@ -173,7 +173,7 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
               <Label className="text-sm font-medium">Priority</Label>
               <Select defaultValue="medium">
                 <SelectTrigger className="bg-background/50 h-10">
-                  <SelectValue placeholder="Select priority" />
+                  <SelectValue placeholder="Priority" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="low">
@@ -203,36 +203,35 @@ export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
                 </SelectContent>
               </Select>
             </div>
-          </div>
 
-          {/* Category - Full Width */}
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Category</Label>
-            <Select>
-              <SelectTrigger className="bg-background/50 h-10">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="work">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-violet-500" />
-                    Work
-                  </div>
-                </SelectItem>
-                <SelectItem value="personal">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-amber-500" />
-                    Personal
-                  </div>
-                </SelectItem>
-                <SelectItem value="shopping">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                    Shopping
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Category</Label>
+              <Select>
+                <SelectTrigger className="bg-background/50 h-10">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="work">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-violet-500" />
+                      Work
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="personal">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-amber-500" />
+                      Personal
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="shopping">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      Shopping
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {/* Recurring Section */}
