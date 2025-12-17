@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator"
 import { Mail, ArrowLeft } from "lucide-react"
 import { continueWithMagicLink } from "../actions"
 import { useAuthCooldown } from "@/hooks/use-auth-cooldown"
+import { createClient } from "@/lib/supabase/client"
 
 function SubmitButton({ cooldown, hasSent }: { cooldown: number, hasSent: boolean }) {
   const { pending } = useFormStatus()
@@ -45,6 +46,23 @@ function AuthContent() {
   const next = searchParams.get("next") || "/dashboard"
   const errorParam = searchParams.get("error")
   const [hashError, setHashError] = useState<string | null>(null)
+
+  const handleGoogleLogin = async () => {
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+    if (error) {
+      console.error(error)
+    }
+  }
 
   useEffect(() => {
     // Check hash for errors (Supabase sometimes returns errors in hash)
@@ -164,7 +182,7 @@ function AuthContent() {
           <Separator className="flex-1" />
         </div>
 
-        <Button variant="outline" className="w-full" type="button">
+        <Button variant="outline" className="w-full" type="button" onClick={handleGoogleLogin}>
           <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
