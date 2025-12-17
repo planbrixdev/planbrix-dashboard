@@ -33,20 +33,26 @@ interface TaskFormProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   initialDate?: Date
+  initialStartTime?: string
 }
 
-export function TaskForm({ children, open, onOpenChange, initialDate }: TaskFormProps) {
+export function TaskForm({ children, open, onOpenChange, initialDate, initialStartTime }: TaskFormProps) {
   const [isRecurring, setIsRecurring] = useState(false)
   const [recurrenceType, setRecurrenceType] = useState<string>("daily")
   const [selectedDays, setSelectedDays] = useState<string[]>([])
   const [date, setDate] = useState<Date | undefined>(initialDate)
+  const [startTime, setStartTime] = useState<string>(initialStartTime || "")
 
-  // Update date when initialDate changes
+  // Update date and time when initial props change
   useEffect(() => {
-    if (initialDate) {
-      setDate(initialDate)
+    if (open) {
+      if (initialDate) setDate(initialDate)
+      if (initialStartTime) setStartTime(initialStartTime)
+      else if (!initialStartTime) setStartTime("") // Reset if opening fresh?
     }
-  }, [initialDate])
+  }, [initialDate, initialStartTime, open])
+
+  // ... (daysOfWeek const and toggleDay func remain same, skipping to save tokens if possible, but replace_file_content needs contiguous block)
 
   const daysOfWeek = [
     { value: "mon", label: "Sen" },
@@ -133,7 +139,13 @@ export function TaskForm({ children, open, onOpenChange, initialDate }: TaskForm
               <Label htmlFor="startTime" className="text-sm font-medium">Start Time</Label>
               <div className="relative">
                 <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input id="startTime" type="time" className="pl-10 bg-background/50 h-10" />
+                <Input
+                  id="startTime"
+                  type="time"
+                  className="pl-10 bg-background/50 h-10"
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                />
               </div>
             </div>
 

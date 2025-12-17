@@ -26,10 +26,11 @@ const TaskModal = () => {
     const taskModal = useTaskModal()
 
     return (
-        <TaskForm 
-            open={taskModal.isOpen} 
+        <TaskForm
+            open={taskModal.isOpen}
             onOpenChange={(open) => !open && taskModal.onClose()}
-            // connect store open/close logic
+            initialDate={taskModal.initialData?.date}
+            initialStartTime={taskModal.initialData?.startTime}
         />
     )
 }

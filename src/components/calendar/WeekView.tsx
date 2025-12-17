@@ -3,6 +3,7 @@
 import { format, startOfWeek, eachDayOfInterval, addDays, isSameDay, isToday } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Task } from "@/types"
+import { useTaskModal } from "@/hooks/use-task-modal"
 
 interface WeekViewProps {
    currentDate: Date
@@ -13,6 +14,7 @@ interface WeekViewProps {
 const HOUR_HEIGHT = 48 // Height per hour in pixels
 
 export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
+   const { onOpen } = useTaskModal()
    const weekStart = startOfWeek(currentDate)
    const weekDays = eachDayOfInterval({
       start: weekStart,
@@ -75,12 +77,22 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
                      )}
                      style={{ height: `${24 * HOUR_HEIGHT}px` }}
                   >
-                     {/* Horizontal grid lines for this column */}
+                     {/* Interactive Hour Slots */}
                      {hours.map((hour) => (
                         <div
-                           key={`line-${hour}`}
-                           className="absolute w-full border-b border-dashed border-muted/30"
-                           style={{ top: `${hour * HOUR_HEIGHT}px` }}
+                           key={`slot-${hour}`}
+                           className="absolute w-full border-t border-dashed border-muted/30 hover:bg-primary/5 cursor-pointer transition-colors"
+                           style={{
+                              top: `${hour * HOUR_HEIGHT}px`,
+                              height: `${HOUR_HEIGHT}px`
+                           }}
+                           onClick={(e) => {
+                              // Prevent click from bubbling if clicking on an event (though event has z-index)
+                              if (e.target === e.currentTarget) {
+                                 const timeString = `${hour.toString().padStart(2, '0')}:00`
+                                 onOpen({ date: day, startTime: timeString })
+                              }
+                           }}
                         />
                      ))}
 
