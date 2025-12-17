@@ -9,7 +9,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
 interface TimePickerProps {
     date?: Date
@@ -74,7 +73,7 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
                 <div className="flex h-[300px] divide-x">
-                    <ScrollArea className="h-full w-[80px]">
+                    <div className="h-full w-[80px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         <div className="p-2 space-y-1">
                             <div className="text-xs font-semibold text-muted-foreground text-center mb-2">Hour</div>
                             {hours.map((h) => (
@@ -89,8 +88,8 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
                                 </Button>
                             ))}
                         </div>
-                    </ScrollArea>
-                    <ScrollArea className="h-full w-[80px]">
+                    </div>
+                    <div className="h-full w-[80px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         <div className="p-2 space-y-1">
                             <div className="text-xs font-semibold text-muted-foreground text-center mb-2">Minute</div>
                             {minutes.map((m) => (
@@ -105,8 +104,8 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
                                 </Button>
                             ))}
                         </div>
-                    </ScrollArea>
-                    <ScrollArea className="h-full w-[80px]">
+                    </div>
+                    <div className="h-full w-[80px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                         <div className="p-2 space-y-1">
                             <div className="text-xs font-semibold text-muted-foreground text-center mb-2">Period</div>
                             {["AM", "PM"].map((p) => (
@@ -121,7 +120,7 @@ export function TimePicker({ value, onChange, className }: TimePickerProps) {
                                 </Button>
                             ))}
                         </div>
-                    </ScrollArea>
+                    </div>
                 </div>
             </PopoverContent>
         </Popover>
