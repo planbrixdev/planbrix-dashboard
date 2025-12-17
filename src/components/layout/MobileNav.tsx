@@ -10,7 +10,8 @@ import {
   Calendar,
   CheckSquare,
   Home,
-  Tags
+  Tags,
+  MessageCircle
 } from "lucide-react"
 import { useTaskModal } from "@/hooks/use-task-modal"
 
@@ -41,9 +42,9 @@ export function MobileNav() {
       href: "/calendar",
     },
     {
-      label: "Tags",
-      icon: Tags,
-      href: "/categories",
+      label: "WhatsApp",
+      icon: MessageCircle,
+      href: "/whatsapp",
     },
   ]
 
@@ -52,22 +53,22 @@ export function MobileNav() {
       <div className="flex h-16 items-center justify-around border-t bg-background/95 px-4 pb-safe glass backdrop-blur-xl safe-area-bottom">
         {routes.map((route, index) => {
           if (route.isFab) {
-             return (
-                <div key={index} className="relative -top-5">
-                     <Button 
-                        onClick={taskModal.onOpen}
-                        size="icon" 
-                        className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
-                    >
-                        <Plus className="h-6 w-6" />
-                        <span className="sr-only">Add Task</span>
-                    </Button>
-                </div>
-             )
+            return (
+              <div key={index} className="relative -top-5">
+                <Button
+                  onClick={taskModal.onOpen}
+                  size="icon"
+                  className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Plus className="h-6 w-6" />
+                  <span className="sr-only">Add Task</span>
+                </Button>
+              </div>
+            )
           }
 
           const isActive = pathname === route.href
-          
+
           return (
             <Link
               key={route.href}
