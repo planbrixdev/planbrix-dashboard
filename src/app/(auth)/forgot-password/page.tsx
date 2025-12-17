@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
       </CardContent>
       <CardFooter className="flex flex-col gap-2">
          <Link 
-            href="/login" 
+            href="/auth" 
             className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
          >
             <ArrowLeft className="mr-2 h-4 w-4" />
