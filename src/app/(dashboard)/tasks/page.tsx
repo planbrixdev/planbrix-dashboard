@@ -7,7 +7,8 @@ import { TaskForm } from "@/components/tasks/TaskForm"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ListFilter, Plus } from "lucide-react"
-import type { Task, Priority, TaskStatus as Status, Category } from "@/types"
+import type { Task, Priority, TaskStatus as Status } from "@/types/interfaces/task"
+import type { Category } from "@/types/interfaces/category"
 
 // Mock categories
 const MOCK_CATEGORIES: Category[] = [

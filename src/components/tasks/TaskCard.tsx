@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { cn, getPriorityColor, formatRelativeDate } from "@/lib/utils"
-import type { Task } from "@/types"
+import type { Task } from "@/types/interfaces/task"
 
 interface TaskCardProps {
   task: Task

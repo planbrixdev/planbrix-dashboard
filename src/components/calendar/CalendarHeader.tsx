@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { CalendarView } from "@/types"
+import { CalendarView } from "@/types/interfaces/calendar"
 import { useTaskModal } from "@/hooks/use-task-modal"
 
 interface CalendarHeaderProps {

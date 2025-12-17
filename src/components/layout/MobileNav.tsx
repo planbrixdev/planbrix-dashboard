@@ -10,8 +10,7 @@ import {
   Calendar,
   CheckSquare,
   Home,
-  Tags,
-  MessageCircle
+  Tags
 } from "lucide-react"
 import { useTaskModal } from "@/hooks/use-task-modal"
 
@@ -40,11 +39,6 @@ export function MobileNav() {
       label: "Calendar",
       icon: Calendar,
       href: "/calendar",
-    },
-    {
-      label: "WhatsApp",
-      icon: MessageCircle,
-      href: "/whatsapp",
     },
   ]
 

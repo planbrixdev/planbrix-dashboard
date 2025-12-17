@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { format, isToday, isTomorrow, isYesterday, isThisWeek } from "date-fns"
 import { id } from "date-fns/locale"
-import type { Priority } from "@/types"
+import type { Priority } from "@/types/interfaces/task"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

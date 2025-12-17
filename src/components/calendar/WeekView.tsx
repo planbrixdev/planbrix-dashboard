@@ -2,7 +2,7 @@
 
 import { format, startOfWeek, eachDayOfInterval, addDays, isSameDay, isToday } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Task } from "@/types"
+import { Task } from "@/types/interfaces/task"
 import { useTaskModal } from "@/hooks/use-task-modal"
 import { ScrollArea } from "@/components/ui/scroll-area"
 

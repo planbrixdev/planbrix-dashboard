@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn, getPriorityColor } from "@/lib/utils"
-import type { Task } from "@/types"
+import type { Task } from "@/types/interfaces/task"
 import { Clock, CheckCircle2, Circle } from "lucide-react"
 import { useEventDetail } from "@/hooks/use-event-detail"
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { MoreHorizontal, Pencil, Trash2, Tag, Plus } from "lucide-react"
-import { Category } from "@/types"
+import { Category } from "@/types/interfaces/category"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,

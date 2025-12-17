@@ -1,7 +1,7 @@
 "use client"
 
 import { TaskCard } from "@/components/tasks/TaskCard"
-import type { Task } from "@/types"
+import type { Task } from "@/types/interfaces/task"
 
 interface TaskListProps {
   tasks: Task[]

@@ -10,8 +10,7 @@ import {
   LayoutDashboard,
   Settings,
   Tags,
-  Plus,
-  MessageCircle
+  Plus
 } from "lucide-react"
 import { useTaskModal } from "@/hooks/use-task-modal"
 
@@ -48,12 +47,6 @@ export function Sidebar({ className }: SidebarProps) {
       icon: Tags,
       href: "/categories",
       color: "text-orange-700",
-    },
-    {
-      label: "WhatsApp",
-      icon: MessageCircle,
-      href: "/whatsapp",
-      color: "text-green-500",
     },
   ]
 

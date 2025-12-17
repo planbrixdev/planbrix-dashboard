@@ -2,7 +2,7 @@
 
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday, startOfMonth, endOfMonth } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Task } from "@/types"
+import { Task } from "@/types/interfaces/task"
 
 interface MonthViewProps {
   currentDate: Date

@@ -38,10 +38,3 @@ next-env.d.ts
 # documentation
 blueprint.md
 
-# whatsapp server
-whatsapp-server/node_modules
-whatsapp-server/whatsapp-session
-whatsapp-server/.wwebjs_auth
-whatsapp-server/.wwebjs_cache
-whatsapp-web.js/node_modules
-

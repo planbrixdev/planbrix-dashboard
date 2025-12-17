@@ -25,16 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Category } from "@/types"
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Category name must be at least 2 characters.",
-  }),
-  color: z.string().regex(/^#([0-9A-F]{3}){1,2}$/i, {
-    message: "Invalid color hex code.",
-  }),
-})
+import { Category } from "@/types/interfaces/category"
+import { categorySchema, CategoryFormValues } from "@/types/schemas/category"
 
 interface CategoryDialogProps {
   category?: Category
@@ -53,8 +45,8 @@ export function CategoryDialog({ category, trigger, open, onOpenChange }: Catego
 
   const isEditing = !!category
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: category?.name || "",
       color: category?.color || "#3b82f6",

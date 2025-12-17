@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import type { Task } from "@/types"
+import type { Task } from "@/types/interfaces/task"
 
 interface EventDetailStore {
   isOpen: boolean
