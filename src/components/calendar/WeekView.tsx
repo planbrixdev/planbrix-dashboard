@@ -51,10 +51,9 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
          </div>
 
          {/* Time Grid - Scrollable */}
-         <ScrollArea className="flex-1">
-            <div className="flex" style={{ height: `${24 * HOUR_HEIGHT}px` }}>
+         <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            <div className="flex pt-4" style={{ height: `${24 * HOUR_HEIGHT}px` }}>
                {/* Time Gutter */}
-               {/* ... content ... */}
                <div className="w-14 shrink-0 border-r bg-muted/5 text-xs text-muted-foreground font-medium">
                   {hours.map((hour) => (
                      <div
@@ -127,7 +126,7 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
                   </div>
                ))}
             </div>
-         </ScrollArea>
+         </div>
       </div>
    )
 }

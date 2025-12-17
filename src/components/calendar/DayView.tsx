@@ -3,7 +3,7 @@
 import { format, isToday } from "date-fns"
 import { cn } from "@/lib/utils"
 import { Task } from "@/types"
-import { ScrollArea } from "@/components/ui/scroll-area"
+
 import { useTaskModal } from "@/hooks/use-task-modal"
 
 interface DayViewProps {
@@ -34,9 +34,9 @@ export function DayView({ currentDate, tasks, onEventClick }: DayViewProps) {
             </div>
 
             {/* Time Grid */}
-            <ScrollArea className="flex-1">
-                <div className="flex" style={{ height: `${24 * HOUR_HEIGHT}px` }}>
-                    <div className="w-20 shrink-0 border-r bg-muted/5 divide-y text-xs text-muted-foreground font-medium text-right pr-4 pt-1">
+            <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="flex pt-4" style={{ height: `${24 * HOUR_HEIGHT}px` }}>
+                    <div className="w-20 shrink-0 border-r bg-muted/5 divide-y text-xs text-muted-foreground font-medium text-right pr-4">
                         {hours.map((hour) => (
                             <div key={hour} className="relative border-b border-dashed border-muted/30" style={{ height: `${HOUR_HEIGHT}px` }}>
                                 <span className="absolute -top-2.5 right-0">{format(new Date().setHours(hour, 0, 0, 0), "ha")}</span>
@@ -92,7 +92,7 @@ export function DayView({ currentDate, tasks, onEventClick }: DayViewProps) {
                         </div>
                     </div>
                 </div>
-            </ScrollArea>
+            </div>
         </div>
     )
 }
