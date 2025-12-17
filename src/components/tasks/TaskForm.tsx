@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Clock, Calendar } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Switch } from "@/components/ui/switch"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
@@ -32,13 +32,21 @@ interface TaskFormProps {
   children?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
+  initialDate?: Date
 }
 
-export function TaskForm({ children, open, onOpenChange }: TaskFormProps) {
+export function TaskForm({ children, open, onOpenChange, initialDate }: TaskFormProps) {
   const [isRecurring, setIsRecurring] = useState(false)
   const [recurrenceType, setRecurrenceType] = useState<string>("daily")
   const [selectedDays, setSelectedDays] = useState<string[]>([])
-  const [date, setDate] = useState<Date>()
+  const [date, setDate] = useState<Date | undefined>(initialDate)
+
+  // Update date when initialDate changes
+  useEffect(() => {
+    if (initialDate) {
+      setDate(initialDate)
+    }
+  }, [initialDate])
 
   const daysOfWeek = [
     { value: "mon", label: "Sen" },

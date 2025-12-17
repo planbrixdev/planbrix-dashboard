@@ -7,6 +7,7 @@ import { MonthView } from "@/components/calendar/MonthView"
 import { WeekView } from "@/components/calendar/WeekView"
 import { DayView } from "@/components/calendar/DayView"
 import { EventDetailDialog } from "@/components/calendar/EventDetailDialog"
+import { TaskForm } from "@/components/tasks/TaskForm"
 import { useEventDetail } from "@/hooks/use-event-detail"
 import { CalendarView as ViewType } from "@/types"
 import type { Task, Category } from "@/types"
@@ -49,7 +50,7 @@ const MOCK_TASKS: Task[] = [
     is_recurring: false,
     created_at: "", updated_at: "", start_date: null, start_time: null, all_day: false, recurrence_rule: null, parent_task_id: null, completed_at: null, deleted_at: null
   },
-   {
+  {
     id: "3",
     user_id: "u1",
     title: "Doctor Appointment",
@@ -68,6 +69,8 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState<ViewType>("month")
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [isNewEventOpen, setIsNewEventOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>()
   const eventDetail = useEventDetail()
 
   const handlePrev = () => {
@@ -84,8 +87,13 @@ export default function CalendarPage() {
 
   const handleToday = () => setCurrentDate(new Date())
 
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date)
+    setIsNewEventOpen(true)
+  }
+
   const toggleCategory = (categoryId: string) => {
-    setSelectedCategories(prev => 
+    setSelectedCategories(prev =>
       prev.includes(categoryId)
         ? prev.filter(id => id !== categoryId)
         : [...prev, categoryId]
@@ -94,7 +102,7 @@ export default function CalendarPage() {
 
   const filteredTasks = useMemo(() => {
     if (selectedCategories.length === 0) return MOCK_TASKS
-    return MOCK_TASKS.filter(task => 
+    return MOCK_TASKS.filter(task =>
       task.category && selectedCategories.includes(task.category.id)
     )
   }, [selectedCategories])
@@ -109,7 +117,7 @@ export default function CalendarPage() {
         view={view}
         onViewChange={setView}
       />
-      
+
       {/* Category Filter Bar */}
       <div className="flex items-center gap-2 mb-2 px-1 overflow-x-auto pb-1">
         <span className="text-xs text-muted-foreground shrink-0">Filter:</span>
@@ -132,9 +140,9 @@ export default function CalendarPage() {
           </Badge>
         ))}
         {selectedCategories.length > 0 && (
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="h-6 px-2 text-xs"
             onClick={() => setSelectedCategories([])}
           >
@@ -143,33 +151,41 @@ export default function CalendarPage() {
           </Button>
         )}
       </div>
-      
+
       <div className="flex-1 overflow-hidden p-1">
         {view === "month" && (
-            <MonthView 
-              currentDate={currentDate} 
-              tasks={filteredTasks} 
-              onEventClick={eventDetail.onOpen}
-            />
+          <MonthView
+            currentDate={currentDate}
+            tasks={filteredTasks}
+            onEventClick={eventDetail.onOpen}
+            onDateClick={handleDateClick}
+          />
         )}
         {view === "week" && (
-            <WeekView 
-              currentDate={currentDate} 
-              tasks={filteredTasks} 
-              onEventClick={eventDetail.onOpen}
-            />
+          <WeekView
+            currentDate={currentDate}
+            tasks={filteredTasks}
+            onEventClick={eventDetail.onOpen}
+          />
         )}
         {view === "day" && (
-            <DayView 
-              currentDate={currentDate} 
-              tasks={filteredTasks} 
-              onEventClick={eventDetail.onOpen}
-            />
+          <DayView
+            currentDate={currentDate}
+            tasks={filteredTasks}
+            onEventClick={eventDetail.onOpen}
+          />
         )}
       </div>
 
       {/* Event Detail Dialog */}
       <EventDetailDialog />
+
+      {/* New Event Dialog */}
+      <TaskForm
+        open={isNewEventOpen}
+        onOpenChange={setIsNewEventOpen}
+        initialDate={selectedDate}
+      />
     </div>
   )
 }

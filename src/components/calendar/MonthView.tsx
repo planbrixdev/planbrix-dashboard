@@ -8,12 +8,13 @@ interface MonthViewProps {
   currentDate: Date
   tasks: Task[]
   onEventClick?: (task: Task) => void
+  onDateClick?: (date: Date) => void
 }
 
-export function MonthView({ currentDate, tasks, onEventClick }: MonthViewProps) {
+export function MonthView({ currentDate, tasks, onEventClick, onDateClick }: MonthViewProps) {
   const monthStart = startOfWeek(startOfMonth(currentDate))
   const monthEnd = endOfWeek(endOfMonth(currentDate))
-  
+
   const calendarDays = eachDayOfInterval({
     start: monthStart,
     end: monthEnd,
@@ -35,55 +36,59 @@ export function MonthView({ currentDate, tasks, onEventClick }: MonthViewProps) 
       {/* Calendar Grid */}
       <div className="flex-1 grid grid-cols-7 grid-rows-5 md:grid-rows-6">
         {calendarDays.map((day, dayIdx) => {
-            const isCurrentMonth = isSameMonth(day, currentDate)
-            const isDayToday = isToday(day)
-            const dayTasks = tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day))
-            
-            return (
-                <div
-                    key={day.toString()}
-                    className={cn(
-                        "min-h-[60px] md:min-h-[100px] border-b border-r p-1 md:p-2 transition-colors relative group hover:bg-muted/20",
-                        !isCurrentMonth && "bg-muted/5 text-muted-foreground/50",
-                        dayIdx % 7 === 6 && "border-r-0"
-                    )}
+          const isCurrentMonth = isSameMonth(day, currentDate)
+          const isDayToday = isToday(day)
+          const dayTasks = tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day))
+
+          return (
+            <div
+              key={day.toString()}
+              className={cn(
+                "min-h-[60px] md:min-h-[100px] border-b border-r p-1 md:p-2 transition-colors relative group hover:bg-muted/20 cursor-pointer",
+                !isCurrentMonth && "bg-muted/5 text-muted-foreground/50",
+                dayIdx % 7 === 6 && "border-r-0"
+              )}
+              onClick={() => onDateClick?.(day)}
+            >
+              <div className="flex items-center justify-between pointer-events-none">
+                <span
+                  className={cn(
+                    "text-sm font-medium h-7 w-7 flex items-center justify-center rounded-full pointer-events-auto cursor-pointer hover:bg-primary/20 transition-colors",
+                    isDayToday && "bg-primary text-primary-foreground hover:bg-primary/90"
+                  )}
                 >
-                    <div className="flex items-center justify-between pointer-events-none">
-                        <span
-                            className={cn(
-                                "text-sm font-medium h-7 w-7 flex items-center justify-center rounded-full pointer-events-auto cursor-pointer hover:bg-primary/20 transition-colors",
-                                isDayToday && "bg-primary text-primary-foreground hover:bg-primary/90"
-                            )}
-                        >
-                            {format(day, "d")}
-                        </span>
-                    </div>
-                    
-                    {/* Tasks/Events List */}
-                    <div className="mt-1 space-y-0.5 md:space-y-1 overflow-hidden max-h-[40px] md:max-h-[80px]">
-                        {dayTasks.slice(0, 3).map((task) => (
-                             <div 
-                                key={task.id} 
-                                onClick={() => onEventClick?.(task)}
-                                className="text-[10px] px-1.5 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all"
-                                style={{ 
-                                    backgroundColor: `${task.category?.color || '#3b82f6'}15`, 
-                                    color: task.category?.color || '#3b82f6',
-                                    borderColor: `${task.category?.color || '#3b82f6'}30`
-                                }}
-                             >
-                                {task.due_time && <span className="mr-1 opacity-70">{task.due_time}</span>}
-                                {task.title}
-                             </div>
-                        ))}
-                        {dayTasks.length > 3 && (
-                            <div className="text-[10px] text-muted-foreground font-medium pl-1 cursor-pointer hover:text-foreground">
-                                +{dayTasks.length - 3} more
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )
+                  {format(day, "d")}
+                </span>
+              </div>
+
+              {/* Tasks/Events List */}
+              <div className="mt-1 space-y-0.5 md:space-y-1 overflow-hidden max-h-[40px] md:max-h-[80px]">
+                {dayTasks.slice(0, 3).map((task) => (
+                  <div
+                    key={task.id}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onEventClick?.(task)
+                    }}
+                    className="text-[10px] px-1.5 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all"
+                    style={{
+                      backgroundColor: `${task.category?.color || '#3b82f6'}15`,
+                      color: task.category?.color || '#3b82f6',
+                      borderColor: `${task.category?.color || '#3b82f6'}30`
+                    }}
+                  >
+                    {task.due_time && <span className="mr-1 opacity-70">{task.due_time}</span>}
+                    {task.title}
+                  </div>
+                ))}
+                {dayTasks.length > 3 && (
+                  <div className="text-[10px] text-muted-foreground font-medium pl-1 cursor-pointer hover:text-foreground">
+                    +{dayTasks.length - 3} more
+                  </div>
+                )}
+              </div>
+            </div>
+          )
         })}
       </div>
     </div>
