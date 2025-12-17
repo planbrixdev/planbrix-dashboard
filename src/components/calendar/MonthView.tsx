@@ -33,20 +33,23 @@ export function MonthView({ currentDate, tasks, onEventClick, onDateClick }: Mon
         ))}
       </div>
 
-      {/* Calendar Grid */}
-      <div className="flex-1 grid grid-cols-7 grid-rows-5 md:grid-rows-6">
+      {/* Calendar Grid - Full Height */}
+      <div className="flex-1 grid grid-cols-7 auto-rows-fr">
         {calendarDays.map((day, dayIdx) => {
           const isCurrentMonth = isSameMonth(day, currentDate)
           const isDayToday = isToday(day)
           const dayTasks = tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day))
+          const totalRows = Math.ceil(calendarDays.length / 7)
+          const isLastRow = dayIdx >= calendarDays.length - 7
 
           return (
             <div
               key={day.toString()}
               className={cn(
-                "min-h-[60px] md:min-h-[100px] border-b border-r p-1 md:p-2 transition-colors relative group hover:bg-muted/20 cursor-pointer",
+                "border-r p-1 md:p-2 transition-colors relative group hover:bg-muted/20 cursor-pointer",
                 !isCurrentMonth && "bg-muted/5 text-muted-foreground/50",
-                dayIdx % 7 === 6 && "border-r-0"
+                dayIdx % 7 === 6 && "border-r-0",
+                !isLastRow && "border-b"
               )}
               onClick={() => onDateClick?.(day)}
             >
