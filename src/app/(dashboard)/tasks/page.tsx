@@ -197,7 +197,7 @@ export default function TasksPage() {
 
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 h-[calc(100vh-8rem)]">
+    <div className="flex flex-col md:flex-row gap-6 h-[calc(100vh-9rem)]">
       {/* Sidebar Filters - Desktop */}
       <aside className="hidden md:block w-64 shrink-0 space-y-6">
         <div className="sticky top-6">
@@ -249,7 +249,7 @@ export default function TasksPage() {
           </Sheet>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 pb-10">
+        <div className="flex-1 overflow-y-auto pr-2 pb-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <TaskList tasks={filteredTasks} />
         </div>
       </div>
