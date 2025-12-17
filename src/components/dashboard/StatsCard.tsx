@@ -12,6 +12,8 @@ interface StatsCardProps {
   className?: string
   trend?: "up" | "down" | "neutral"
   trendValue?: string
+  iconClassName?: string
+  iconContainerClassName?: string
 }
 
 export function StatsCard({
@@ -22,6 +24,8 @@ export function StatsCard({
   className,
   trend,
   trendValue,
+  iconClassName,
+  iconContainerClassName,
 }: StatsCardProps) {
   return (
     <Card className={cn("glass transition-all hover:scale-[1.02]", className)}>
@@ -29,8 +33,8 @@ export function StatsCard({
         <CardTitle className="text-sm font-medium text-muted-foreground">
           {title}
         </CardTitle>
-        <div className={cn("p-2 rounded-full bg-background/50")}>
-          <Icon className="h-4 w-4 text-primary" />
+        <div className={cn("p-2 rounded-full bg-background/50", iconContainerClassName)}>
+          <Icon className={cn("h-4 w-4 text-primary", iconClassName)} />
         </div>
       </CardHeader>
       <CardContent>
@@ -62,6 +66,8 @@ export function DashboardStats() {
         trend="up"
         trendValue="12%"
         className="bg-primary/10 border-primary/20 text-primary"
+        iconContainerClassName="bg-primary/20"
+        iconClassName="text-primary"
       />
       <StatsCard
         title="Completed"
@@ -69,6 +75,8 @@ export function DashboardStats() {
         description="Tasks completed today"
         icon={CheckCircle2}
         className="bg-green-500/15 border-green-500/30 text-green-600"
+        iconContainerClassName="bg-green-500/20"
+        iconClassName="text-green-600"
       />
       <StatsCard
         title="Pending"
@@ -76,6 +84,8 @@ export function DashboardStats() {
         description="Remaining tasks"
         icon={Clock}
         className="bg-orange-500/15 border-orange-500/30 text-orange-600"
+        iconContainerClassName="bg-orange-500/20"
+        iconClassName="text-orange-600"
       />
       <StatsCard
         title="Overdue"
@@ -85,6 +95,8 @@ export function DashboardStats() {
         className="bg-red-500/15 border-red-500/30 text-red-600"
         trend="down"
         trendValue="2%"
+        iconContainerClassName="bg-red-500/20"
+        iconClassName="text-red-600"
       />
     </div>
   )
