@@ -10,7 +10,7 @@ interface WeekViewProps {
    onEventClick?: (task: Task) => void
 }
 
-const HOUR_HEIGHT = 48 // Height per hour in pixels (more compact)
+const HOUR_HEIGHT = 48 // Height per hour in pixels
 
 export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
    const weekStart = startOfWeek(currentDate)
@@ -23,22 +23,28 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
 
    return (
       <div className="flex flex-col h-full bg-card/40 rounded-xl border shadow-sm backdrop-blur-sm overflow-hidden">
-         {/* Header */}
+         {/* Header Row */}
          <div className="flex border-b bg-muted/30 shrink-0">
-            <div className="w-14 shrink-0 border-r bg-muted/10"></div> {/* Time gutter header */}
-            <div className="flex-1 grid grid-cols-7 divide-x">
-               {weekDays.map((day) => (
-                  <div key={day.toString()} className="py-2 text-center">
-                     <div className="text-xs font-medium text-muted-foreground uppercase">{format(day, "EEE")}</div>
-                     <div className={cn(
-                        "mt-1 text-lg font-bold h-8 w-8 mx-auto flex items-center justify-center rounded-full",
-                        isToday(day) && "bg-primary text-primary-foreground"
-                     )}>
-                        {format(day, "d")}
-                     </div>
+            {/* Time gutter header - spacer */}
+            <div className="w-14 shrink-0 border-r bg-muted/10"></div>
+            {/* Day Headers */}
+            {weekDays.map((day, idx) => (
+               <div
+                  key={day.toString()}
+                  className={cn(
+                     "flex-1 py-2 text-center",
+                     idx < 6 && "border-r"
+                  )}
+               >
+                  <div className="text-xs font-medium text-muted-foreground uppercase">{format(day, "EEE")}</div>
+                  <div className={cn(
+                     "mt-1 text-lg font-bold h-8 w-8 mx-auto flex items-center justify-center rounded-full",
+                     isToday(day) && "bg-primary text-primary-foreground"
+                  )}>
+                     {format(day, "d")}
                   </div>
-               ))}
-            </div>
+               </div>
+            ))}
          </div>
 
          {/* Time Grid - Scrollable */}
@@ -60,52 +66,52 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
                </div>
 
                {/* Day Columns */}
-               <div className="flex-1 grid grid-cols-7 divide-x relative">
-                  {/* Horizontal grid lines */}
-                  {hours.map((hour) => (
-                     <div
-                        key={`line-${hour}`}
-                        className="absolute w-full border-b border-dashed border-muted/30"
-                        style={{ top: `${hour * HOUR_HEIGHT}px` }}
-                     />
-                  ))}
+               {weekDays.map((day, idx) => (
+                  <div
+                     key={day.toString()}
+                     className={cn(
+                        "flex-1 relative",
+                        idx < 6 && "border-r"
+                     )}
+                     style={{ height: `${24 * HOUR_HEIGHT}px` }}
+                  >
+                     {/* Horizontal grid lines for this column */}
+                     {hours.map((hour) => (
+                        <div
+                           key={`line-${hour}`}
+                           className="absolute w-full border-b border-dashed border-muted/30"
+                           style={{ top: `${hour * HOUR_HEIGHT}px` }}
+                        />
+                     ))}
 
-                  {weekDays.map((day) => (
-                     <div
-                        key={day.toString()}
-                        className="relative"
-                        style={{ height: `${24 * HOUR_HEIGHT}px` }}
-                     >
-                        {/* Render events for this day */}
-                        {tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day)).map(task => {
-                           // Position based on time
-                           const timeParts = (task.due_time || "00:00").split(":")
-                           const h = parseInt(timeParts[0]) || 0
-                           const m = parseInt(timeParts[1]) || 0
-                           const top = (h * HOUR_HEIGHT) + ((m / 60) * HOUR_HEIGHT)
+                     {/* Render events for this day */}
+                     {tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day)).map(task => {
+                        const timeParts = (task.due_time || "00:00").split(":")
+                        const h = parseInt(timeParts[0]) || 0
+                        const m = parseInt(timeParts[1]) || 0
+                        const top = (h * HOUR_HEIGHT) + ((m / 60) * HOUR_HEIGHT)
 
-                           return (
-                              <div
-                                 key={task.id}
-                                 onClick={() => onEventClick?.(task)}
-                                 className="absolute left-0.5 right-0.5 p-1.5 rounded-md border text-xs overflow-hidden shadow-sm hover:z-10 transition-all hover:scale-[1.02] cursor-pointer"
-                                 style={{
-                                    top: `${top}px`,
-                                    height: `${HOUR_HEIGHT - 4}px`,
-                                    backgroundColor: `${task.category?.color || '#3b82f6'}20`,
-                                    color: task.category?.color || '#3b82f6',
-                                    borderLeftWidth: '3px',
-                                    borderLeftColor: task.category?.color || '#3b82f6'
-                                 }}
-                              >
-                                 <div className="font-semibold truncate text-[11px]">{task.title}</div>
-                                 <div className="opacity-80 truncate text-[10px]">{task.due_time}</div>
-                              </div>
-                           )
-                        })}
-                     </div>
-                  ))}
-               </div>
+                        return (
+                           <div
+                              key={task.id}
+                              onClick={() => onEventClick?.(task)}
+                              className="absolute left-0.5 right-0.5 p-1.5 rounded-md border text-xs overflow-hidden shadow-sm hover:z-10 transition-all hover:scale-[1.02] cursor-pointer"
+                              style={{
+                                 top: `${top}px`,
+                                 height: `${HOUR_HEIGHT - 4}px`,
+                                 backgroundColor: `${task.category?.color || '#3b82f6'}20`,
+                                 color: task.category?.color || '#3b82f6',
+                                 borderLeftWidth: '3px',
+                                 borderLeftColor: task.category?.color || '#3b82f6'
+                              }}
+                           >
+                              <div className="font-semibold truncate text-[11px]">{task.title}</div>
+                              <div className="opacity-80 truncate text-[10px]">{task.due_time}</div>
+                           </div>
+                        )
+                     })}
+                  </div>
+               ))}
             </div>
          </div>
       </div>
