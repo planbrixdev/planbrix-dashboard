@@ -9,16 +9,18 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { format } from "date-fns"
 import { cn } from "@/lib/utils"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { TimePicker } from "@/components/ui/time-picker"
+
+const formatTimeDisplay = (time: string) => {
+    if (!time) return ""
+    const [h, m] = time.split(":").map(Number)
+    const period = h >= 12 ? "PM" : "AM"
+    const hour = h % 12 || 12
+    return `${hour}:${m.toString().padStart(2, "0")} ${period}`
+}
 
 
 // Mock Categories (Simulated)
@@ -150,27 +152,25 @@ export function QuickAdd() {
                                 <PopoverTrigger asChild>
                                     <Button type="button" variant={(startTime || endTime) ? "secondary" : "ghost"} size="sm" className={cn("h-7 px-2 text-xs", (startTime || endTime) && "bg-primary/10 text-primary hover:bg-primary/20")}>
                                         <Clock className="mr-1.5 h-3.5 w-3.5" />
-                                        {startTime ? `${startTime}${endTime ? ' - ' + endTime : ''}` : "Time"}
+                                        {startTime ? `${formatTimeDisplay(startTime)}${endTime ? ' - ' + formatTimeDisplay(endTime) : ''}` : "Time"}
                                     </Button>
                                 </PopoverTrigger>
-                                <PopoverContent className="w-64 p-4" align="start">
-                                    <div className="flex gap-4 items-center">
-                                        <div className="space-y-1.5 flex-1">
+                                <PopoverContent className="w-auto p-4" align="start">
+                                    <div className="flex gap-4">
+                                        <div className="space-y-1.5">
                                             <Label className="text-xs font-medium text-muted-foreground">Start Time</Label>
-                                            <Input
-                                                type="time"
+                                            <TimePicker
                                                 value={startTime}
-                                                onChange={(e) => setStartTime(e.target.value)}
-                                                className="h-9 w-full text-sm"
+                                                onChange={setStartTime}
+                                                className="h-8 w-[140px]"
                                             />
                                         </div>
-                                        <div className="space-y-1.5 flex-1">
+                                        <div className="space-y-1.5">
                                             <Label className="text-xs font-medium text-muted-foreground">End Time</Label>
-                                            <Input
-                                                type="time"
+                                            <TimePicker
                                                 value={endTime}
-                                                onChange={(e) => setEndTime(e.target.value)}
-                                                className="h-9 w-full text-sm"
+                                                onChange={setEndTime}
+                                                className="h-8 w-[140px]"
                                             />
                                         </div>
                                     </div>
