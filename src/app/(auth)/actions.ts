@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
 
-export async function continueWithMagicLink(prevState: any, formData: FormData) {
+export async function continueWithMagicLink(prevState: { error?: string, success?: boolean, rateLimit?: boolean } | null, formData: FormData) {
   const supabase = await createClient()
   const email = formData.get('email') as string
   const origin = (await headers()).get('origin')

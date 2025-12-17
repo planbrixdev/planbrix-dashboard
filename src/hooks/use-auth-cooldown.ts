@@ -13,6 +13,7 @@ export function useAuthCooldown() {
       const remaining = duration - elapsed
       
       if (remaining > 0) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCooldown(remaining)
       } else {
         localStorage.removeItem(key)
