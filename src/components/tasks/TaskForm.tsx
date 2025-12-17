@@ -148,20 +148,10 @@ export function TaskForm({ children, open, onOpenChange, initialDate, initialSta
 
             <div className="space-y-2">
               <Label htmlFor="endTime" className="text-sm font-medium">End Time</Label>
-              {/* Note: TaskForm doesn't seem to have 'endTime' state managed in the snippet I saw earlier? 
-                   I saw <Input id="endTime" ... /> but no value/onChange prop in the read snippet.
-                   I will assume standard uncontrolled or I missed the state. 
-                   Wait, I should check TaskForm state first. I saw `startTime` state but not `endTime`.
-                   Let's check TaskForm content again to be sure I don't break it. 
-                   Ah, I read it earlier. 
-               */}
               <TimePicker
+                value={endTime}
+                onChange={setEndTime}
                 className="h-10 bg-background/50"
-              // If state is missing, I should probably add it or leave it uncontrolled? 
-              // The previous code had <Input id="endTime" ... /> without value.
-              // I will add uncontrolled support or just leave it as is if I can't bind state? 
-              // But TimePicker needs value/onChange. 
-              // I will add [endTime, setEndTime] state to TaskForm as well.
               />
             </div>
           </div>
