@@ -16,8 +16,27 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "./Sidebar"
 import { Notifications } from "./Notifications"
+import { User } from "@supabase/supabase-js"
+import { createClient } from "@/lib/supabase/client"
+import { useRouter } from "next/navigation"
 
-export function Header() {
+interface HeaderProps {
+  user: User | null
+}
+
+export function Header({ user }: HeaderProps) {
+  const router = useRouter()
+  const supabase = createClient()
+  const email = user?.email || "user@example.com"
+  const name = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "User"
+  const initials = name.slice(0, 2).toUpperCase()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push("/auth")
+    router.refresh()
+  }
+
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-background/50 glass px-6 backdrop-blur-xl sticky top-0 z-30">
       <div className="flex items-center gap-4">
@@ -50,17 +69,17 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-9 w-9 rounded-full">
               <Avatar className="h-9 w-9 border transition-all hover:scale-105">
-                <AvatarImage src="/avatars/01.png" alt="@user" />
-                <AvatarFallback>JD</AvatarFallback>
+                <AvatarImage src={user?.user_metadata?.avatar_url || "/avatars/01.png"} alt="@user" />
+                <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">John Doe</p>
+                <p className="text-sm font-medium leading-none">{name}</p>
                 <p className="text-xs leading-none text-muted-foreground">
-                  john@example.com
+                  {email}
                 </p>
               </div>
             </DropdownMenuLabel>
@@ -68,7 +87,10 @@ export function Header() {
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-500 focus:bg-red-500/10 focus:text-red-500">
+            <DropdownMenuItem 
+              className="text-red-500 focus:bg-red-500/10 focus:text-red-500 cursor-pointer"
+              onClick={handleLogout}
+            >
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
