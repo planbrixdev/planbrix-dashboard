@@ -36,11 +36,11 @@ export function EventDetailDialog() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[480px] p-0 overflow-hidden border-0 shadow-2xl">
+      <DialogContent showCloseButton={false} className="sm:max-w-[480px] p-0 overflow-hidden border-0 shadow-2xl">
         {/* Header with gradient background */}
-        <div 
+        <div
           className="relative p-6 pb-8"
-          style={{ 
+          style={{
             background: `linear-gradient(135deg, ${categoryColor}20 0%, ${categoryColor}05 100%)`,
             borderBottom: `3px solid ${categoryColor}`
           }}
@@ -58,9 +58,9 @@ export function EventDetailDialog() {
           <DialogHeader className="pr-8">
             <div className="flex items-center gap-2 mb-2">
               {selectedEvent.category && (
-                <Badge 
+                <Badge
                   className="border-0 font-medium"
-                  style={{ 
+                  style={{
                     backgroundColor: categoryColor,
                     color: 'white'
                   }}
@@ -77,7 +77,7 @@ export function EventDetailDialog() {
             </DialogTitle>
           </DialogHeader>
         </div>
-        
+
         <div className="p-6 space-y-5">
           {selectedEvent.description && (
             <p className="text-muted-foreground leading-relaxed">
@@ -98,7 +98,7 @@ export function EventDetailDialog() {
                 </div>
               </div>
             )}
-            
+
             {selectedEvent.due_time && (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
