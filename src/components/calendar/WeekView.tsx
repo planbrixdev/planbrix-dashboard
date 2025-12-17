@@ -4,6 +4,7 @@ import { format, startOfWeek, eachDayOfInterval, addDays, isSameDay, isToday } f
 import { cn } from "@/lib/utils"
 import { Task } from "@/types"
 import { useTaskModal } from "@/hooks/use-task-modal"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface WeekViewProps {
    currentDate: Date
@@ -50,9 +51,10 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
          </div>
 
          {/* Time Grid - Scrollable */}
-         <div className="flex-1 overflow-y-auto overflow-x-hidden">
+         <ScrollArea className="flex-1">
             <div className="flex" style={{ height: `${24 * HOUR_HEIGHT}px` }}>
                {/* Time Gutter */}
+               {/* ... content ... */}
                <div className="w-14 shrink-0 border-r bg-muted/5 text-xs text-muted-foreground font-medium">
                   {hours.map((hour) => (
                      <div
@@ -125,7 +127,7 @@ export function WeekView({ currentDate, tasks, onEventClick }: WeekViewProps) {
                   </div>
                ))}
             </div>
-         </div>
+         </ScrollArea>
       </div>
    )
 }
