@@ -50,7 +50,7 @@ export function MobileNav() {
             return (
               <div key={index} className="relative -top-5">
                 <Button
-                  onClick={taskModal.onOpen}
+                  onClick={() => taskModal.onOpen()}
                   size="icon"
                   className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
