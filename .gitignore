@@ -40,3 +40,8 @@ next-env.d.ts
 # documentation
 blueprint.md
 
+# whatsapp
+whatsapp-server/
+whatsapp-session/
+whatsapp-web.js/
+
