@@ -37,6 +37,12 @@ export function Sidebar({ className }: SidebarProps) {
       count: 0,
     },
     {
+      label: "Activities",
+      icon: CheckSquare,
+      href: "/activities",
+      color: "text-emerald-500",
+    },
+    {
       label: "Calendar",
       icon: Calendar,
       href: "/calendar",
