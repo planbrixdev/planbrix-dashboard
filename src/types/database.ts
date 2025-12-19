@@ -124,6 +124,41 @@ export interface Database {
           custom_color?: string | null
         }
       }
+      categories: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string | null
+          deleted_at: string | null
+          user_id: string | null
+          name: string | null
+          description: string | null
+          color: string | null
+          icon: string | null
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string | null
+          deleted_at?: string | null
+          user_id?: string | null
+          name?: string | null
+          description?: string | null
+          color?: string | null
+          icon?: string | null
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string | null
+          deleted_at?: string | null
+          user_id?: string | null
+          name?: string | null
+          description?: string | null
+          color?: string | null
+          icon?: string | null
+        }
+      }
       // Add other tables if needed, but these are the core for now
     }
   }

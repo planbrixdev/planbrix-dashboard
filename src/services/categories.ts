@@ -1,12 +1,22 @@
-import type { Category } from "@/types/interfaces/category"
+import { createClient } from "@/lib/supabase/server"
+import { Database } from "@/types/database"
 
-export const MOCK_CATEGORIES: Category[] = [
-  { id: "c1", name: "Work", color: "#7C6AFA", created_at: "", user_id: "", icon: null },
-  { id: "c2", name: "Personal", color: "#F59E0B", created_at: "", user_id: "", icon: null },
-  { id: "c3", name: "Shopping", color: "#10B981", created_at: "", user_id: "", icon: null },
-]
+export type Category = Database["public"]["Tables"]["categories"]["Row"]
 
-export async function getCategories(): Promise<Category[]> {
-  // Simulate DB call
-  return MOCK_CATEGORIES
+export async function getCategories(userId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("categories")
+    .select("*")
+    .eq("user_id", userId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    console.error("Error fetching categories:", error)
+    return []
+  }
+
+  return data as Category[]
 }

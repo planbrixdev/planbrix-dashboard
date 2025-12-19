@@ -2,16 +2,16 @@
 
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday, startOfMonth, endOfMonth } from "date-fns"
 import { cn } from "@/lib/utils"
-import { Task } from "@/types/interfaces/task"
+import { ActivityWithParticipants } from "@/types/database"
 
 interface MonthViewProps {
   currentDate: Date
-  tasks: Task[]
-  onEventClick?: (task: Task) => void
+  activities: ActivityWithParticipants[]
+  onEventClick?: (activity: ActivityWithParticipants) => void
   onDateClick?: (date: Date) => void
 }
 
-export function MonthView({ currentDate, tasks, onEventClick, onDateClick }: MonthViewProps) {
+export function MonthView({ currentDate, activities, onEventClick, onDateClick }: MonthViewProps) {
   const monthStart = startOfWeek(startOfMonth(currentDate))
   const monthEnd = endOfWeek(endOfMonth(currentDate))
 
@@ -38,7 +38,10 @@ export function MonthView({ currentDate, tasks, onEventClick, onDateClick }: Mon
         {calendarDays.map((day, dayIdx) => {
           const isCurrentMonth = isSameMonth(day, currentDate)
           const isDayToday = isToday(day)
-          const dayTasks = tasks.filter(t => t.due_date && isSameDay(new Date(t.due_date), day))
+          const dayActivities = activities.filter(a => {
+            const date = a.type === 'EVENT' ? a.start_at : a.due_at
+            return date && isSameDay(new Date(date), day)
+          })
           const totalRows = Math.ceil(calendarDays.length / 7)
           const isLastRow = dayIdx >= calendarDays.length - 7
 
@@ -66,27 +69,26 @@ export function MonthView({ currentDate, tasks, onEventClick, onDateClick }: Mon
 
               {/* Tasks/Events List */}
               <div className="mt-1 space-y-0.5 md:space-y-1 overflow-hidden max-h-[40px] md:max-h-[80px]">
-                {dayTasks.slice(0, 3).map((task) => (
+                {dayActivities.slice(0, 3).map((activity) => (
                   <div
-                    key={task.id}
+                    key={activity.id}
                     onClick={(e) => {
                       e.stopPropagation()
-                      onEventClick?.(task)
+                      onEventClick?.(activity)
                     }}
                     className="text-[10px] px-1.5 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all"
                     style={{
-                      backgroundColor: `${task.category?.color || '#3b82f6'}15`,
-                      color: task.category?.color || '#3b82f6',
-                      borderColor: `${task.category?.color || '#3b82f6'}30`
+                      backgroundColor: activity.type === 'EVENT' ? '#e0f2fe' : '#f1f5f9',
+                      borderColor: activity.type === 'EVENT' ? '#7dd3fc' : '#cbd5e1',
+                      color: activity.type === 'EVENT' ? '#0369a1' : '#334155'
                     }}
                   >
-                    {task.due_time && <span className="mr-1 opacity-70">{task.due_time}</span>}
-                    {task.title}
+                    {activity.title}
                   </div>
                 ))}
-                {dayTasks.length > 3 && (
-                  <div className="text-[10px] text-muted-foreground font-medium pl-1 cursor-pointer hover:text-foreground">
-                    +{dayTasks.length - 3} more
+                {dayActivities.length > 3 && (
+                  <div className="text-[10px] text-muted-foreground pl-1">
+                    +{dayActivities.length - 3} more
                   </div>
                 )}
               </div>

@@ -1,37 +1,43 @@
-"use client"
+import { createClient } from "@/lib/supabase/server"
+import { getActivities } from "@/services/activities"
+import { DashboardView } from "@/components/dashboard/DashboardView"
+import { redirect } from "next/navigation"
+import { isSameDay, isAfter, isBefore, startOfDay } from "date-fns"
 
-import { DashboardStats } from "@/components/dashboard/StatsCard"
-import { TodayTasks } from "@/components/dashboard/TodayTasks"
-import { UpcomingTasks } from "@/components/dashboard/UpcomingTasks"
-import { QuickAdd } from "@/components/dashboard/QuickAdd"
-import { EventDetailDialog } from "@/components/calendar/EventDetailDialog"
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-export default function DashboardPage() {
+  if (!user) redirect("/auth")
+
+  const activities = await getActivities(user.id)
+
+  const today = new Date()
+  const todayActivities = activities.filter(a => {
+    const date = a.start_at ? new Date(a.start_at) : a.due_at ? new Date(a.due_at) : null
+    return date && isSameDay(date, today)
+  })
+
+  const upcomingActivities = activities.filter(a => {
+    const date = a.start_at ? new Date(a.start_at) : a.due_at ? new Date(a.due_at) : null
+    return date && isAfter(date, today)
+  }).slice(0, 5)
+
+  const stats = {
+    total: activities.length,
+    completed: activities.filter(a => a.status === "DONE").length,
+    pending: activities.filter(a => a.status === "TODO" || a.status === "IN_PROGRESS").length,
+    overdue: activities.filter(a => {
+      const date = a.due_at ? new Date(a.due_at) : null
+      return date && isBefore(date, startOfDay(today)) && a.status !== "DONE"
+    }).length
+  }
+
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-            Dashboard
-          </h2>
-          <p className="text-muted-foreground">
-            Here&apos;s an overview of your tasks for today.
-          </p>
-        </div>
-      </div>
-
-      <DashboardStats />
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4 lg:col-span-5 space-y-6">
-          <QuickAdd />
-          <TodayTasks />
-        </div>
-        <div className="col-span-3 lg:col-span-2">
-          <UpcomingTasks />
-        </div>
-      </div>
-      <EventDetailDialog />
-    </div>
+    <DashboardView 
+      todayActivities={todayActivities}
+      upcomingActivities={upcomingActivities}
+      stats={stats}
+    />
   )
 }

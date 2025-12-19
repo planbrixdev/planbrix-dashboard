@@ -1,27 +1,29 @@
-"use client"
-
+import { createClient } from "@/lib/supabase/server"
+import { getCategories } from "@/services/categories"
 import { CategoryList } from "@/components/categories/CategoryList"
-import { CategoryDialog } from "@/components/categories/CategoryDialog"
-import { Separator } from "@/components/ui/separator"
+import { CategoryForm } from "@/components/categories/CategoryForm"
+import { redirect } from "next/navigation"
 
+export default async function CategoriesPage() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-export default function CategoriesPage() {
+  if (!user) redirect("/auth")
+
+  const categories = await getCategories(user.id)
+
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
+    <div className="flex flex-col gap-6 p-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Categories</h2>
+          <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
           <p className="text-muted-foreground">
-            Manage your task categories and tags.
+            Organize your tasks and events.
           </p>
         </div>
-        <div className="flex items-center space-x-2">
-           <CategoryDialog />
-        </div>
+        <CategoryForm />
       </div>
-      <Separator />
-      
-      <CategoryList />
+      <CategoryList categories={categories} />
     </div>
   )
 }
