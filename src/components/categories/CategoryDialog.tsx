@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Category } from "@/types/interfaces/category"
-import { categorySchema, CategoryFormValues } from "@/types/schemas/category"
+import { categorySchema, CategoryFormValues } from "@/lib/validations/category"
 
 interface CategoryDialogProps {
   category?: Category

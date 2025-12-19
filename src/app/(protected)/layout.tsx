@@ -1,7 +1,7 @@
 import { Header } from "@/components/layout/Header"
 import { Sidebar } from "@/components/layout/Sidebar"
 import { MobileNav } from "@/components/layout/MobileNav"
-import { TaskModalProvider } from "@/components/modals/task-modal-provider"
+import { TaskModalProvider } from "@/providers/task-modal-provider"
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 

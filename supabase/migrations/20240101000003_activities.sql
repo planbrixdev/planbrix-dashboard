@@ -1,0 +1,178 @@
+create table public.activities (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default (now() AT TIME ZONE 'utc'::text),
+  updated_at timestamp with time zone null default (now() AT TIME ZONE 'utc'::text),
+  deleted_at timestamp with time zone null,
+  user_id uuid null,
+  title text null,
+  description text null,
+  start_at timestamp with time zone null,
+  due_at timestamp with time zone null,
+  end_at timestamp with time zone null,
+  type text null,
+  status text null,
+  priority text null,
+  category_id uuid null,
+  is_active boolean null default true,
+  recurrence_rule text null,
+  parent_id uuid null,
+  is_recurring boolean null default false,
+  is_all_day boolean null default false,
+  is_shared boolean null default false,
+  team_id uuid null,
+  last_updated_by uuid null,
+  constraint events_pkey primary key (id),
+  constraint activities_last_updated_by_fkey foreign KEY (last_updated_by) references users (id),
+  constraint activities_parent_id_fkey foreign KEY (parent_id) references activities (id),
+  constraint activities_category_id_fkey foreign KEY (category_id) references categories (id),
+  constraint activities_user_id_fkey foreign KEY (user_id) references users (id),
+  constraint activities_team_id_fkey foreign KEY (team_id) references teams (id) on delete CASCADE,
+  constraint check_activity_logic check (
+    (
+      (
+        (end_at is null)
+        or (end_at >= start_at)
+      )
+      and (type = any (array['TASK'::text, 'EVENT'::text]))
+      and (
+        status = any (
+          array[
+            'TODO'::text,
+            'IN_PROGRESS'::text,
+            'DONE'::text,
+            'CANCELLED'::text
+          ]
+        )
+      )
+      and (
+        priority = any (
+          array[
+            'LOW'::text,
+            'MEDIUM'::text,
+            'HIGH'::text,
+            'URGENT'::text
+          ]
+        )
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create table public.activity_participants (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  deleted_at timestamp with time zone null,
+  activity_id uuid null,
+  user_id uuid null,
+  role text null default 'VIEWER'::text,
+  status text null default 'PENDING'::text,
+  invited_at timestamp with time zone null default now(),
+  joined_at timestamp with time zone null,
+  custom_color text null,
+  constraint activity_participants_pkey primary key (id),
+  constraint unique_activity_participant unique (activity_id, user_id),
+  constraint activity_participants_activity_id_fkey foreign KEY (activity_id) references activities (id) on delete CASCADE,
+  constraint activity_participants_user_id_fkey foreign KEY (user_id) references users (id),
+  constraint check_participant_role check (
+    (
+      role = any (
+        array['VIEWER'::text, 'COMMENTER'::text, 'EDITOR'::text]
+      )
+    )
+  ),
+  constraint check_participant_status check (
+    (
+      status = any (
+        array[
+          'PENDING'::text,
+          'ACCEPTED'::text,
+          'DECLINED'::text
+        ]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create table public.activity_logs (
+  id uuid not null default gen_random_uuid (),
+  activity_id uuid not null,
+  user_id uuid null,
+  action_type text not null,
+  changed_column text null,
+  old_value jsonb null,
+  new_value jsonb null,
+  created_at timestamp with time zone null default now(),
+  constraint activity_logs_pkey primary key (id),
+  constraint activity_logs_activity_id_fkey foreign KEY (activity_id) references activities (id) on delete CASCADE,
+  constraint activity_logs_user_id_fkey foreign KEY (user_id) references users (id) on delete set null
+) TABLESPACE pg_default;
+
+create index IF not exists idx_activity_logs_activity_id on public.activity_logs using btree (activity_id) TABLESPACE pg_default;
+
+create table public.activity_instances (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  deleted_at timestamp with time zone null,
+  activity_id uuid null,
+  occurrence_at timestamp with time zone not null,
+  status text null,
+  overridden_start_at timestamp with time zone null,
+  overridden_end_at timestamp with time zone null,
+  overridden_due_at timestamp with time zone null,
+  completed_at timestamp with time zone null,
+  is_cancelled boolean null default false,
+  constraint activity_instances_pkey primary key (id),
+  constraint unique_activity_instance unique (activity_id, occurrence_at),
+  constraint activity_instances_activity_id_fkey foreign KEY (activity_id) references activities (id) on delete CASCADE,
+  constraint check_instance_status check (
+    (
+      status = any (
+        array['TODO'::text, 'IN_PROGRESS'::text, 'DONE'::text]
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger trg_instance_completion BEFORE
+update on activity_instances for EACH row
+execute FUNCTION handle_instance_completion ();
+
+create table public.activity_comments (
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone null default now(),
+  deleted_at timestamp with time zone null,
+  activity_id uuid null,
+  user_id uuid null,
+  content text null,
+  parent_comment_id uuid null,
+  activity_instance_id uuid null,
+  constraint activity_comments_pkey primary key (id),
+  constraint activity_comments_activity_id_fkey foreign KEY (activity_id) references activities (id) on delete CASCADE,
+  constraint activity_comments_activity_instance_id_fkey foreign KEY (activity_instance_id) references activity_instances (id) on delete CASCADE,
+  constraint activity_comments_parent_commet_id_fkey foreign KEY (parent_comment_id) references activity_comments (id) on delete CASCADE,
+  constraint activity_comments_user_id_fkey foreign KEY (user_id) references users (id)
+) TABLESPACE pg_default;
+
+create trigger trg_activity_audit
+after INSERT
+or
+update on activities for EACH row
+execute FUNCTION function_log_activity_changes ();
+
+create trigger trg_audit_log
+after INSERT
+or
+update on activities for EACH row
+execute FUNCTION handle_activity_audit_log ();
+
+create trigger trg_set_last_editor BEFORE
+update on activities for EACH row
+execute FUNCTION handle_set_last_updated_by ();
+
+create trigger trg_sync_instances
+after
+update on activities for EACH row
+execute FUNCTION sync_activity_instances_reference ();
