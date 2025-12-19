@@ -74,7 +74,7 @@ export function Sidebar({ className }: SidebarProps) {
 
           <div className="px-3 mb-6">
             <Button
-              onClick={taskModal.onOpen}
+              onClick={() => taskModal.onOpen()}
               className="w-full justify-start bg-primary/10 hover:bg-primary/20 text-primary border-0"
               variant="outline"
             >
