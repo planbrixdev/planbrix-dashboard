@@ -4,10 +4,12 @@ import { useState } from "react"
 import { addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, format, startOfWeek, endOfWeek } from "date-fns"
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { MonthView } from "./MonthView"
 import { WeekView } from "./WeekView"
 import { DayView } from "./DayView"
-import { ActivityWithParticipants } from "@/types/database"
+import { QuickActivityDialog } from "./QuickActivityDialog"
+import { CalendarActivity, ActivityWithParticipants } from "@/types/database"
 import { CreateActivityButton } from "@/components/activities/CreateActivityButton"
 import {
   Select,
@@ -16,16 +18,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useEventDetail } from "@/hooks/use-event-detail"
+import { EventDetailDialog } from "./EventDetailDialog"
 
 interface CalendarViewProps {
-  activities: ActivityWithParticipants[]
+  activities: CalendarActivity[] | ActivityWithParticipants[]
+  hideCreateButton?: boolean
+  className?: string
 }
 
 type ViewType = "month" | "week" | "day"
 
-export function CalendarView({ activities }: CalendarViewProps) {
+export function CalendarView({ activities, hideCreateButton = false, className }: CalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [view, setView] = useState<ViewType>("month")
+  const [quickDialogOpen, setQuickDialogOpen] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const { onOpen: openEventDetail } = useEventDetail()
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date)
+    setQuickDialogOpen(true)
+  }
+
+  const handleEventClick = (activity: CalendarActivity | ActivityWithParticipants) => {
+    openEventDetail(activity)
+  }
 
   const next = () => {
     if (view === "month") setCurrentDate(addMonths(currentDate, 1))
@@ -55,7 +73,7 @@ export function CalendarView({ activities }: CalendarViewProps) {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] gap-4">
+    <div className={cn("flex flex-col h-full gap-4", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -87,7 +105,7 @@ export function CalendarView({ activities }: CalendarViewProps) {
             </SelectContent>
           </Select>
         </div>
-        <CreateActivityButton />
+        {!hideCreateButton && <CreateActivityButton />}
       </div>
 
       <div className="flex-1 min-h-0">
@@ -95,32 +113,36 @@ export function CalendarView({ activities }: CalendarViewProps) {
           <MonthView 
             currentDate={currentDate} 
             activities={activities}
-            onEventClick={(activity) => console.log("Clicked", activity)}
-            onDateClick={(date) => {
-              setCurrentDate(date)
-              setView("day")
-            }}
+            onEventClick={handleEventClick}
+            onDateClick={handleDateClick}
           />
         )}
         {view === "week" && (
           <WeekView 
             currentDate={currentDate} 
             activities={activities}
-            onEventClick={(activity) => console.log("Clicked", activity)}
-            onDateClick={(date) => {
-              setCurrentDate(date)
-              setView("day")
-            }}
+            onEventClick={handleEventClick}
+            onDateClick={handleDateClick}
           />
         )}
         {view === "day" && (
           <DayView 
             currentDate={currentDate} 
             activities={activities}
-            onEventClick={(activity) => console.log("Clicked", activity)}
+            onEventClick={handleEventClick}
           />
         )}
       </div>
+
+      {/* Quick Activity Dialog */}
+      <QuickActivityDialog
+        open={quickDialogOpen}
+        onOpenChange={setQuickDialogOpen}
+        selectedDate={selectedDate}
+      />
+
+      {/* Event Detail Dialog */}
+      <EventDetailDialog />
     </div>
   )
 }

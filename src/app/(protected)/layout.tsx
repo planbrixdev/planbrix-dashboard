@@ -19,15 +19,21 @@ export default async function ProtectedLayout({
     redirect("/auth")
   }
 
+  const { data: profile } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
+
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
       {/* Sidebar for Desktop */}
       <Sidebar />
 
-      <div className="flex w-full flex-col md:pl-64">
-        <Header user={user} />
+      <div className="flex w-full flex-col md:pl-64 h-full overflow-hidden">
+        <Header user={user} profile={profile} />
         
-        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6 pb-24 md:pb-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-8 pt-6 pb-24 md:pb-8 overflow-hidden min-h-0">
           {children}
         </main>
 

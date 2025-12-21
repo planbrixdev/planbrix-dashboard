@@ -2,28 +2,71 @@
 
 import { format, isToday, getHours, getMinutes, differenceInMinutes, isSameDay } from "date-fns"
 import { cn } from "@/lib/utils"
-import { ActivityWithParticipants } from "@/types/database"
+import { CalendarActivity, ActivityWithParticipants } from "@/types/database"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { Repeat } from "lucide-react"
 
 interface DayViewProps {
     currentDate: Date
-    activities: ActivityWithParticipants[]
-    onEventClick?: (activity: ActivityWithParticipants) => void
+    activities: (CalendarActivity | ActivityWithParticipants)[]
+    onEventClick?: (activity: CalendarActivity | ActivityWithParticipants) => void
 }
 
 const HOUR_HEIGHT = 80 // Height per hour in pixels
+
+// Helper function to get activity start date
+function getActivityStartDate(activity: CalendarActivity | ActivityWithParticipants): Date | null {
+  if ('startAt' in activity && activity.startAt) {
+    return activity.startAt instanceof Date ? activity.startAt : new Date(activity.startAt)
+  }
+  if ('dueAt' in activity && activity.dueAt) {
+    return activity.dueAt instanceof Date ? activity.dueAt : new Date(activity.dueAt)
+  }
+  if ('occurrenceAt' in activity && activity.occurrenceAt) {
+    return activity.occurrenceAt instanceof Date ? activity.occurrenceAt : new Date(activity.occurrenceAt)
+  }
+  if ('start_at' in activity && activity.start_at) {
+    return new Date(activity.start_at)
+  }
+  if ('due_at' in activity && activity.due_at) {
+    return new Date(activity.due_at)
+  }
+  return null
+}
+
+// Helper function to get activity end date
+function getActivityEndDate(activity: CalendarActivity | ActivityWithParticipants): Date | null {
+  if ('endAt' in activity && activity.endAt) {
+    return activity.endAt instanceof Date ? activity.endAt : new Date(activity.endAt)
+  }
+  if ('end_at' in activity && activity.end_at) {
+    return new Date(activity.end_at)
+  }
+  return null
+}
+
+// Helper function to check if activity is recurring
+function isRecurring(activity: CalendarActivity | ActivityWithParticipants): boolean {
+  return ('isRecurring' in activity && activity.isRecurring) || 
+         ('is_recurring' in activity && activity.is_recurring) || false
+}
+
+// Helper function to get activity type
+function getActivityType(activity: CalendarActivity | ActivityWithParticipants): string {
+  return activity.type || 'TASK'
+}
 
 export function DayView({ currentDate, activities, onEventClick }: DayViewProps) {
     const hours = Array.from({ length: 24 }, (_, i) => i)
 
     const dayActivities = activities.filter(a => {
-        const date = a.start_at ? new Date(a.start_at) : a.due_at ? new Date(a.due_at) : null
+        const date = getActivityStartDate(a)
         return date && isSameDay(date, currentDate)
     })
 
-    const getEventStyle = (activity: ActivityWithParticipants) => {
-        const start = activity.start_at ? new Date(activity.start_at) : activity.due_at ? new Date(activity.due_at) : new Date()
-        const end = activity.end_at ? new Date(activity.end_at) : new Date(start.getTime() + 60 * 60 * 1000) // Default 1 hour duration
+    const getEventStyle = (activity: CalendarActivity | ActivityWithParticipants) => {
+        const start = getActivityStartDate(activity) || new Date()
+        const end = getActivityEndDate(activity) || new Date(start.getTime() + 60 * 60 * 1000) // Default 1 hour duration
 
         const startHour = getHours(start)
         const startMinute = getMinutes(start)
@@ -32,12 +75,14 @@ export function DayView({ currentDate, activities, onEventClick }: DayViewProps)
         const top = (startHour * HOUR_HEIGHT) + ((startMinute / 60) * HOUR_HEIGHT)
         const height = Math.max((durationMinutes / 60) * HOUR_HEIGHT, 40) // Min height 40px
 
+        const activityType = getActivityType(activity)
+        
         return {
             top: `${top}px`,
             height: `${height}px`,
-            backgroundColor: activity.type === 'EVENT' ? '#e0f2fe' : '#f1f5f9',
-            borderColor: activity.type === 'EVENT' ? '#7dd3fc' : '#cbd5e1',
-            color: activity.type === 'EVENT' ? '#0369a1' : '#334155'
+            backgroundColor: activityType === 'EVENT' ? '#e0f2fe' : '#f1f5f9',
+            borderColor: activityType === 'EVENT' ? '#7dd3fc' : '#cbd5e1',
+            color: activityType === 'EVENT' ? '#0369a1' : '#334155'
         }
     }
 
@@ -76,26 +121,33 @@ export function DayView({ currentDate, activities, onEventClick }: DayViewProps)
                         </div>
 
                         {/* Activities */}
-                        {dayActivities.map(activity => (
-                            <div
-                                key={activity.id}
-                                className="absolute left-2 right-2 rounded border px-4 py-2 overflow-hidden cursor-pointer hover:opacity-80 hover:scale-[1.01] transition-all z-10 shadow-sm"
-                                style={getEventStyle(activity)}
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    onEventClick?.(activity)
-                                }}
-                            >
-                                <div className="font-semibold">{activity.title}</div>
-                                <div className="text-sm opacity-80">
-                                    {activity.start_at && format(new Date(activity.start_at), "h:mm a")}
-                                    {activity.due_at && `Due: ${format(new Date(activity.due_at), "h:mm a")}`}
+                        {dayActivities.map(activity => {
+                            const recurring = isRecurring(activity)
+                            const startDate = getActivityStartDate(activity)
+                            
+                            return (
+                                <div
+                                    key={activity.id}
+                                    className="absolute left-2 right-2 rounded border px-4 py-2 overflow-hidden cursor-pointer hover:opacity-80 hover:scale-[1.01] transition-all z-10 shadow-sm"
+                                    style={getEventStyle(activity)}
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        onEventClick?.(activity)
+                                    }}
+                                >
+                                    <div className="font-semibold flex items-center gap-2">
+                                        {recurring && <Repeat className="h-4 w-4 shrink-0" />}
+                                        <span>{activity.title}</span>
+                                    </div>
+                                    <div className="text-sm opacity-80">
+                                        {startDate && format(startDate, "h:mm a")}
+                                    </div>
+                                    {activity.description && (
+                                        <div className="text-xs mt-1 opacity-70 line-clamp-2">{activity.description}</div>
+                                    )}
                                 </div>
-                                {activity.description && (
-                                    <div className="text-xs mt-1 opacity-70 line-clamp-2">{activity.description}</div>
-                                )}
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             </ScrollArea>

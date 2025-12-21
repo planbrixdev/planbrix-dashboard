@@ -9,10 +9,17 @@ import {
   CheckSquare,
   LayoutDashboard,
   Settings,
-  Tags,
   Plus
 } from "lucide-react"
 import { useTaskModal } from "@/hooks/use-task-modal"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { ActivityType } from "@/lib/validations/activities"
+import { SidebarCategories } from "./SidebarCategories"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string
@@ -30,29 +37,16 @@ export function Sidebar({ className }: SidebarProps) {
       color: "text-sky-500",
     },
     {
-      label: "My Tasks",
-      icon: CheckSquare,
-      href: "/tasks",
-      color: "text-violet-500",
-      count: 0,
-    },
-    {
-      label: "Activities",
-      icon: CheckSquare,
-      href: "/activities",
-      color: "text-emerald-500",
-    },
-    {
       label: "Calendar",
       icon: Calendar,
       href: "/calendar",
       color: "text-pink-700",
     },
     {
-      label: "Categories",
-      icon: Tags,
-      href: "/categories",
-      color: "text-orange-700",
+      label: "My Activities",
+      icon: CheckSquare,
+      href: "/activities",
+      color: "text-emerald-500",
     },
   ]
 
@@ -78,15 +72,26 @@ export function Sidebar({ className }: SidebarProps) {
             </h1>
           </Link>
 
-          <div className="px-3 mb-6">
-            <Button
-              onClick={() => taskModal.onOpen()}
-              className="w-full justify-start bg-primary/10 hover:bg-primary/20 text-primary border-0"
-              variant="outline"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              New Task
-            </Button>
+          <div className="mb-6">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  suppressHydrationWarning
+                  className="w-full justify-start h-auto p-3 rounded-lg"
+                >
+                  <Plus className="h-5 w-5 mr-3" />
+                  New Activity
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-[220px]">
+                <DropdownMenuItem onClick={() => taskModal.onOpen({ type: ActivityType.EVENT })}>
+                  Event
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => taskModal.onOpen({ type: ActivityType.TASK })}>
+                  Task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="space-y-1">
@@ -106,13 +111,13 @@ export function Sidebar({ className }: SidebarProps) {
                   <route.icon className={cn("h-5 w-5 mr-3", route.color)} />
                   {route.label}
                 </div>
-                {route.count !== undefined && route.count > 0 && (
-                  <span className="bg-primary/20 text-primary text-xs py-0.5 px-2 rounded-full">
-                    {route.count}
-                  </span>
-                )}
               </Link>
             ))}
+          </div>
+
+          {/* Categories Section */}
+          <div className="mt-6">
+            <SidebarCategories />
           </div>
         </div>
       </div>

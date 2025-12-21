@@ -1,6 +1,5 @@
 "use client"
 
-import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfileSettings } from "@/components/settings/ProfileSettings"
 import { AppearanceSettings } from "@/components/settings/AppearanceSettings"
@@ -9,17 +8,10 @@ import { NotificationSettings } from "@/components/settings/NotificationSettings
 export default function SettingsPage() {
   return (
     <div className="space-y-6 pb-16 block">
-      <div className="space-y-0.5">
-        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences.
-        </p>
-      </div>
-      <Separator className="my-6" />
       <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-        <aside className="-mx-4 lg:w-1/5">
+        <aside className="lg:w-1/5">
            {/* Sidebar or simple description for now */}
-           <p className="px-4 text-sm text-muted-foreground hidden lg:block">
+           <p className="text-sm text-muted-foreground hidden lg:block">
              Customize how the workspace looks and works for you.
            </p>
         </aside>

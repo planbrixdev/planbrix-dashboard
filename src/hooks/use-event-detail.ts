@@ -1,10 +1,13 @@
 import { create } from "zustand"
-import type { Task } from "@/types/interfaces/task"
+import type { CalendarActivity, ActivityWithParticipants } from "@/types/database"
+
+// Union type to support both formats
+type EventType = CalendarActivity | ActivityWithParticipants | any
 
 interface EventDetailStore {
   isOpen: boolean
-  selectedEvent: Task | null
-  onOpen: (event: Task) => void
+  selectedEvent: EventType | null
+  onOpen: (event: EventType) => void
   onClose: () => void
 }
 

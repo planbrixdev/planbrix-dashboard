@@ -2,13 +2,49 @@
 
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth, isSameDay, isToday, startOfMonth, endOfMonth } from "date-fns"
 import { cn } from "@/lib/utils"
-import { ActivityWithParticipants } from "@/types/database"
+import { CalendarActivity, ActivityWithParticipants } from "@/types/database"
+import { Repeat } from "lucide-react"
 
 interface MonthViewProps {
   currentDate: Date
-  activities: ActivityWithParticipants[]
-  onEventClick?: (activity: ActivityWithParticipants) => void
+  activities: (CalendarActivity | ActivityWithParticipants)[]
+  onEventClick?: (activity: CalendarActivity | ActivityWithParticipants) => void
   onDateClick?: (date: Date) => void
+}
+
+// Helper function to get activity date
+function getActivityDate(activity: CalendarActivity | ActivityWithParticipants): Date | null {
+  // Handle CalendarActivity format
+  if ('startAt' in activity && activity.startAt) {
+    return activity.startAt instanceof Date ? activity.startAt : new Date(activity.startAt)
+  }
+  if ('dueAt' in activity && activity.dueAt) {
+    return activity.dueAt instanceof Date ? activity.dueAt : new Date(activity.dueAt)
+  }
+  if ('occurrenceAt' in activity && activity.occurrenceAt) {
+    return activity.occurrenceAt instanceof Date ? activity.occurrenceAt : new Date(activity.occurrenceAt)
+  }
+  
+  // Handle ActivityWithParticipants format
+  if ('start_at' in activity && activity.start_at) {
+    return new Date(activity.start_at)
+  }
+  if ('due_at' in activity && activity.due_at) {
+    return new Date(activity.due_at)
+  }
+  
+  return null
+}
+
+// Helper function to check if activity is recurring
+function isRecurring(activity: CalendarActivity | ActivityWithParticipants): boolean {
+  return ('isRecurring' in activity && activity.isRecurring) || 
+         ('is_recurring' in activity && activity.is_recurring) || false
+}
+
+// Helper function to get activity type
+function getActivityType(activity: CalendarActivity | ActivityWithParticipants): string {
+  return activity.type || 'TASK'
 }
 
 export function MonthView({ currentDate, activities, onEventClick, onDateClick }: MonthViewProps) {
@@ -39,10 +75,9 @@ export function MonthView({ currentDate, activities, onEventClick, onDateClick }
           const isCurrentMonth = isSameMonth(day, currentDate)
           const isDayToday = isToday(day)
           const dayActivities = activities.filter(a => {
-            const date = a.type === 'EVENT' ? a.start_at : a.due_at
-            return date && isSameDay(new Date(date), day)
+            const date = getActivityDate(a)
+            return date && isSameDay(date, day)
           })
-          const totalRows = Math.ceil(calendarDays.length / 7)
           const isLastRow = dayIdx >= calendarDays.length - 7
 
           return (
@@ -69,23 +104,29 @@ export function MonthView({ currentDate, activities, onEventClick, onDateClick }
 
               {/* Tasks/Events List */}
               <div className="mt-1 space-y-0.5 md:space-y-1 overflow-hidden max-h-[40px] md:max-h-[80px]">
-                {dayActivities.slice(0, 3).map((activity) => (
-                  <div
-                    key={activity.id}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onEventClick?.(activity)
-                    }}
-                    className="text-[10px] px-1.5 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all"
-                    style={{
-                      backgroundColor: activity.type === 'EVENT' ? '#e0f2fe' : '#f1f5f9',
-                      borderColor: activity.type === 'EVENT' ? '#7dd3fc' : '#cbd5e1',
-                      color: activity.type === 'EVENT' ? '#0369a1' : '#334155'
-                    }}
-                  >
-                    {activity.title}
-                  </div>
-                ))}
+                {dayActivities.slice(0, 3).map((activity) => {
+                  const activityType = getActivityType(activity)
+                  const recurring = isRecurring(activity)
+                  
+                  return (
+                    <div
+                      key={activity.id}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onEventClick?.(activity)
+                      }}
+                      className="text-[10px] px-1.5 py-0.5 rounded truncate border cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all flex items-center gap-1"
+                      style={{
+                        backgroundColor: activityType === 'EVENT' ? '#e0f2fe' : '#f1f5f9',
+                        borderColor: activityType === 'EVENT' ? '#7dd3fc' : '#cbd5e1',
+                        color: activityType === 'EVENT' ? '#0369a1' : '#334155'
+                      }}
+                    >
+                      {recurring && <Repeat className="h-2.5 w-2.5 shrink-0" />}
+                      <span className="truncate">{activity.title}</span>
+                    </div>
+                  )
+                })}
                 {dayActivities.length > 3 && (
                   <div className="text-[10px] text-muted-foreground pl-1">
                     +{dayActivities.length - 3} more
